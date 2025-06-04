@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pitíčka</title>
   <style>
     body {
@@ -10,193 +10,83 @@
       max-width: 500px;
       margin: auto;
       padding: 1em;
-      position: relative;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 0.3em;
-    }
-    #avatar {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: #666;
-      color: white;
-      font-weight: bold;
-      font-size: 1.3em;
-      line-height: 50px;
-      text-align: center;
-      user-select: none;
-    }
-    #buttons-row {
-      display: flex;
-      justify-content: center;
-      gap: 1em;
-      margin-bottom: 0.8em;
-    }
-    #buttons-row button {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
+    button {
+      display: inline-block;
+      margin: 0.5em;
+      padding: 1em;
+      font-size: 1.2em;
+      border-radius: 2em;
+      min-width: 140px;
       border: none;
       color: white;
-      font-size: 1em;
-      cursor: pointer;
-      white-space: pre-line;
-    }
-    #buttons-row-2 {
-      display: flex;
-      justify-content: center;
-      gap: 1em;
-      margin-bottom: 0.8em;
-    }
-    #buttons-row-2 button {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: none;
-      color: white;
-      font-size: 1em;
-      cursor: pointer;
-      white-space: pre-line;
-    }
-    #buttons-row-3 {
-      display: flex;
-      justify-content: center;
-      gap: 1em;
-      margin-bottom: 1em;
-    }
-    #buttons-row-3 button {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      border: none;
-      color: white;
-      font-size: 1em;
-      cursor: pointer;
-      white-space: pre-line;
     }
     .plzen { background-color: gold; color: black; }
     .radek { background-color: green; }
     .birell { background-color: blue; }
     .posh { background-color: hotpink; }
     .nealko { background-color: orange; }
-    .dikytato { background-color: sienna; }
+    .pay-now { background-color: brown; }
+    .pay-later { background-color: gray; }
 
     #summary, #details {
       margin-top: 1em;
       font-weight: bold;
-      text-align: center;
     }
     #qr {
       margin-top: 1em;
       text-align: center;
     }
-    #user-new {
+    .user-links {
       margin-top: 2em;
-      text-align: center;
+      padding: 1em;
+      background: #f2f2f2;
+      border-radius: 10px;
     }
-    #user-new input {
-      padding: 0.4em;
-      font-size: 1em;
-      width: 150px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    #user-new button {
-      padding: 0.4em 1em;
-      font-size: 1em;
-      margin-left: 0.5em;
-      cursor: pointer;
-    }
-    #pay-buttons {
-      margin-top: 1em;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      gap: 1em;
-    }
-    #pay-buttons button {
-      padding: 0.7em 1.4em;
-      font-size: 1.1em;
-      cursor: pointer;
-      border-radius: 20px;
-      border: none;
-      color: white;
-    }
-    #pay-now {
-      background-color: #007bff;
-    }
-    #pay-later {
-      background-color: #28a745;
+    .user-links input {
+      margin-right: 0.5em;
     }
   </style>
 </head>
 <body>
   <h1>Pitíčka</h1>
-  <div id="avatar" title="Uživatel"></div>
-
-  <div id="buttons-row"></div>
-  <div id="buttons-row-2"></div>
-  <div id="buttons-row-3"></div>
-
+  <div id="user-info"></div>
+  <div id="buttons"></div>
   <div id="details"></div>
   <div id="summary">Součet: 0 Kč</div>
-
-  <div id="pay-buttons">
-    <button id="pay-now">Krupicu mám</button>
-    <button id="pay-later">Sorry bro</button>
-  </div>
-
+  <button class="pay-now" onclick="generateQr()">Krupicu mám</button>
+  <button class="pay-later" onclick="alert('Uloženo na později!')">Sorry bro</button>
   <div id="qr"></div>
 
-  <div id="user-new">
-    <input type="text" id="newUserInput" placeholder="Kdo si?" maxlength="15" />
-    <button id="addUserBtn">Přidat chábra</button>
+  <div class="user-links">
+    <p>Kdo si:</p>
+    <input id="newUser" placeholder="např. Návštěva" />
+    <button onclick="addUser()">Přidat chábra</button>
   </div>
 
   <script>
-    const drinksRow1 = [
+    const drinks = [
       { name: "Plzeň", price: 26, class: "plzen" },
       { name: "Radek", price: 20, class: "radek" },
-    ];
-    const drinksRow2 = [
+      { name: "Birell", price: 20, class: "birell" },
       { name: "Posh nealko", price: 25, class: "posh" },
       { name: "Nealko", price: 10, class: "nealko" },
-    ];
-    const drinksRow3 = [
-      { name: "Birell", price: 20, class: "birell" },
-      { name: "Díky táto", price: 10, class: "dikytato" },
+      { name: "Díky táto", price: 10, class: "pay-now" },
     ];
 
-    let user = "host";
     let total = 0;
+    let user = "host";
     const selections = {};
 
-    function saveData() {
-      localStorage.setItem(`utrata_${user}`, JSON.stringify({total, selections}));
-    }
-
-    function loadData() {
-      const saved = localStorage.getItem(`utrata_${user}`);
-      if (saved) {
-        const obj = JSON.parse(saved);
-        total = obj.total || 0;
-        Object.assign(selections, obj.selections || {});
-      }
-    }
-
-    function clearData() {
-      localStorage.removeItem(`utrata_${user}`);
-      total = 0;
-      for(let k in selections) delete selections[k];
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
     }
 
     function updateSummary() {
-      document.getElementById("summary").textContent = `Součet: ${total} Kč`;
+      document.getElementById("summary").textContent =
+        `Součet: ${total} Kč`;
+
       const detailsDiv = document.getElementById("details");
       const detailList = Object.entries(selections)
         .map(([name, count]) => `${count}× ${name}`)
@@ -208,99 +98,47 @@
       total += drink.price;
       selections[drink.name] = (selections[drink.name] || 0) + 1;
       updateSummary();
-      saveData();
+    }
+
+    function removeDiacritics(str) {
+      return str.normalize("NFD").replace(/\p{Diacritic}/gu, "");
     }
 
     function generateQr() {
-      if (total <= 0) {
-        alert("Nejsou vybrány žádné položky k platbě.");
+      if (total === 0) {
+        alert("Nemáš nic k úhradě!");
         return;
       }
       const variableSymbol = new Date().toISOString().slice(0, 10).replaceAll("-", "");
-      const message = `${user} ${variableSymbol}`;
-      const qrData = `SPD*1.0*ACC:CZ7030300000001165726015*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
+      const cleanName = removeDiacritics(user).replace(/\s+/g, "_");
+      const message = `${cleanName} ${variableSymbol}`;
+      const qrData = `SPD*1.0*ACC:CZ3010100000001165726015*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
-
       document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
-
-      if(user === "host") {
-        clearData();
-        updateSummary();
-      }
     }
 
-    function initButtons() {
-      const container1 = document.getElementById("buttons-row");
-      drinksRow1.forEach(drink => {
+    function init() {
+      user = getParam("u") || "host";
+      document.getElementById("user-info").textContent = `Uživatel: ${user}`;
+      const container = document.getElementById("buttons");
+      drinks.forEach(drink => {
         const btn = document.createElement("button");
         btn.className = drink.class;
-        btn.textContent = `${drink.name}\n(${drink.price} Kč)`;
+        btn.textContent = `${drink.name} (${drink.price} Kč)`;
         btn.onclick = () => addDrink(drink);
-        container1.appendChild(btn);
+        container.appendChild(btn);
       });
-
-      const container2 = document.getElementById("buttons-row-2");
-      drinksRow2.forEach(drink => {
-        const btn = document.createElement("button");
-        btn.className = drink.class;
-        btn.textContent = `${drink.name}\n(${drink.price} Kč)`;
-        btn.onclick = () => addDrink(drink);
-        container2.appendChild(btn);
-      });
-
-      const container3 = document.getElementById("buttons-row-3");
-      drinksRow3.forEach(drink => {
-        const btn = document.createElement("button");
-        btn.className = drink.class;
-        btn.textContent = `${drink.name}\n(${drink.price} Kč)`;
-        btn.onclick = () => addDrink(drink);
-        container3.appendChild(btn);
-      });
-    }
-
-    function setAvatar() {
-      const avatarDiv = document.getElementById("avatar");
-      if(user === "host") {
-        avatarDiv.textContent = "OM";
-        avatarDiv.title = "Host (Om)";
-      } else {
-        let initials = user.split(" ").map(w => w[0].toUpperCase()).join("").slice(0,2);
-        avatarDiv.textContent = initials || "??";
-        avatarDiv.title = `Uživatel: ${user}`;
-      }
     }
 
     function addUser() {
-      const input = document.getElementById("newUserInput");
-      const name = input.value.trim();
-      if(name.length < 2) {
-        alert("Přezdívka musí mít alespoň 2 znaky.");
-        return;
+      const input = document.getElementById("newUser");
+      const newName = input.value.trim();
+      if (newName) {
+        window.location.search = `?u=${encodeURIComponent(newName)}`;
       }
-      user = name;
-      clearData();
-      loadData();
-      updateSummary();
-      setAvatar();
-      input.value = "";
-      document.getElementById("qr").innerHTML = "";
     }
 
-    document.getElementById("pay-now").addEventListener("click", () => {
-      generateQr();
-    });
-
-    document.getElementById("pay-later").addEventListener("click", () => {
-      saveData();
-      alert("Útrata uložena pro pozdější platbu.");
-    });
-
-    document.getElementById("addUserBtn").addEventListener("click", addUser);
-
-    loadData();
-    updateSummary();
-    initButtons();
-    setAvatar();
+    init();
   </script>
 </body>
 </html>
