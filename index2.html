@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Útrata ve zkušebně</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 1em;
+      position: relative;
+      min-height: 100vh;
+    }
+    #user-info {
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+    #buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 1em;
+      justify-items: center;
+      margin-bottom: 1em;
+    }
+    button.drink-btn {
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: transform 0.15s ease-in-out;
+      white-space: pre-line;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    button.drink-btn:hover {
+      transform: scale(1.1);
+    }
+    .plzen { background-color: gold; color: black; }
+    .radek { background-color: green; }
+    .birell { background-color: blue; }
+    .posh { background-color: hotpink; }
+    .nealko { background-color: darkgreen; }
+    .dikytato { background-color: saddlebrown; }
+
+    #summary, #details {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    #qr {
+      margin-top: 1em;
+      text-align: center;
+    }
+    #avatars {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    .avatar-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #666;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+      box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+
+    #new-user-section {
+      margin-top: 2em;
+      text-align: center;
+    }
+    #new-user-section input[type="text"] {
+      font-size: 1em;
+      padding: 0.3em 0.5em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 150px;
+      margin-right: 0.5em;
+    }
+    #new-user-section button {
+      font-size: 1em;
+      padding: 0.4em 1em;
+      border-radius: 5px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    #new-user-section button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Útrata ve zkušebně</h1>
+  <div id="user-info"></div>
+
+  <div id="buttons"></div>
+
+  <div id="details"></div>
+  <div id="summary">Součet: 0 Kč</div>
+
+  <button onclick="generateQr()" style="margin-top:1em;">Vygenerovat QR kód k platbě</button>
+  <div id="qr"></div>
+
+  <div id="new-user-section">
+    <input type="text" id="new-username" placeholder="Nová přezdívka" maxlength="20" />
+    <button onclick="addNewUser()">Přidat uživatele</button>
+  </div>
+
+  <div id="avatars"></div>
+
+<script>
+  const drinks = [
+    { name: "Plzeň", price: 26, class: "plzen" },
+    { name: "Radek", price: 20, class: "radek" },
+    { name: "Posh nealko", price: 25, class: "posh" },
+    { name: "Nealko", price: 10, class: "nealko" },
+    { name: "Birell", price: 20, class: "birell" },
+    { name: "díky táto", price: 10, class: "dikytato" },
+  ];
+
+  let total = 0;
+  let user = "host";
+  let selections = {};
+
+  // Pomocná funkce pro get parametrů
+  function getParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+  }
+
+  // Uložit data do localStorage podle uživatele a dne
+  function saveData() {
+    if (!user) return;
+    const key = `utrata_${user}_${getDateStr()}`;
+    localStorage.setItem(key, JSON.stringify({ total, selections }));
+  }
+
+  // Načíst data z localStorage
+  function loadData() {
+    if (!user) return;
+    const key = `utrata_${user}_${getDateStr()}`;
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      const data = JSON.parse(saved);
+      total = data.total || 0;
+      selections = data.selections || {};
+    } else {
+      total = 0;
+      selections = {};
+    }
+  }
+
+  // Formát datumu YYYYMMDD
+  function getDateStr() {
+    const d = new Date();
+    return d.toISOString().slice(0,10).replace(/-/g,'');
+  }
+
+  function updateSummary() {
+    document.getElementById("summary").textContent = `Součet: ${total} Kč`;
+    const detailsDiv = document.getElementById("details");
+    const detailList = Object.entries(selections)
+      .map(([name, count]) => `${count}× ${name}`)
+      .join(", ");
+    detailsDiv.textContent = detailList ? `Detaily: ${detailList}` : "";
+  }
+
+  function addDrink(drink) {
+    total += drink.price;
+    selections[drink.name] = (selections[drink.name] || 0) + 1;
+    updateSummary();
+    saveData();
+  }
+
+  // Reset utraty a uložit
+  function resetUtrata() {
+    total = 0;
+    selections = {};
+    updateSummary();
+    saveData();
+  }
+
+  function generateQr() {
+    if (total <= 0) {
+      alert("Nejsou vybrány žádné nápoje.");
+      return;
+    }
+    const variableSymbol = getDateStr();
+    const message = `${user} ${variableSymbol}`;
+    // Použijeme český formát účtu CZ70 3030 0000 0011 6572 6015 (AirBank)
+    const qrData = `SPD*1.0*ACC:${"CZ7030300000001165726015"}*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
+    document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
+
+    // Po zaplacení resetovat útratu
+    resetUtrata();
+  }
+
+  // Avatar: pro uživatele Omelkáč a Ouhryzek ukáže kruh s iniciály v pravém horním rohu
+  function showAvatar(user) {
+    const avatarsDiv = document.getElementById("avatars");
+    avatarsDiv.innerHTML = ""; // vyčistit
+    const knownUsers = {
+      "Omelkáč": "OM",
+      "Ouhryzek": "OU"
+    };
+    for (const [username, initials] of Object.entries(knownUsers)) {
+      if (username === user) {
+        const div = document.createElement("div");
+        div.className = "avatar-circle";
+        div.textContent = initials;
+        avatarsDiv.appendChild(div);
+      }
+    }
+  }
+
+  // Přidání nového uživatele: přesměruje na stejnou stránku s parametrem ?u=novyuser
+  function addNewUser() {
+    const input = document.getElementById("new-username");
+    const val = input.value.trim();
+    if (val.length === 0) {
+      alert("Zadej prosím přezdívku.");
+      return;
+    }
+    // Pro jednoduchost jen přesměrujeme
+    window.location.search = `?u=${encodeURIComponent(val)}`;
+  }
+
+  // Inicializace
+  function init() {
+    user = getParam("u") || "host";
+    document.getElementById("user-info").textContent = `Uživatel: ${user}`;
+    loadData();
+    updateSummary();
+    showAvatar(user);
+
+    const container = document.getElementById("buttons");
+    container.innerHTML = "";
+
+    // Pořadí tlačítek dle požadavku
+    const order = ["Plzeň", "Radek", "Posh nealko", "Nealko", "Birell", "díky táto"];
+
+    order.forEach(name => {
+      const drink = drinks.find(d => d.name === name);
+      if (!drink) return;
+      const btn = document.createElement("button");
+      btn.className = "drink-btn " + drink.class;
+      btn.innerText = `${drink.name}\n(${drink.price} Kč)`;
+      btn.onclick = () => addDrink(drink);
+      container.appendChild(btn);
+    });
+  }
+
+  window.onload = init;
+</script>
+</body>
+</html>
