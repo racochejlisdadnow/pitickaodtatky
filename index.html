@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Útrata ve zkušebně</title>
+  <title>Pitíčka</title>
   <style>
     body {
       font-family: sans-serif;
@@ -12,265 +12,298 @@
       padding: 1em;
       position: relative;
       min-height: 100vh;
+      background: #fafafa;
     }
-    #user-info {
-      font-weight: bold;
+    h1 {
+      text-align: center;
       margin-bottom: 0.5em;
     }
+    #avatar {
+      position: fixed;
+      top: 1em;
+      right: 1em;
+      width: 48px;
+      height: 48px;
+      background-color: #666;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.3em;
+      user-select: none;
+    }
     #buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-gap: 1em;
-      justify-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
       margin-bottom: 1em;
     }
-    button.drink-btn {
-      border: none;
-      color: white;
-      font-size: 1.2em;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      transition: transform 0.15s ease-in-out;
-      white-space: pre-line;
+    .row {
       display: flex;
-      flex-direction: column;
       justify-content: center;
-      align-items: center;
-      text-align: center;
+      gap: 1em;
+      margin-bottom: 1em;
+      width: 100%;
     }
-    button.drink-btn:hover {
-      transform: scale(1.1);
+    button {
+      border: none;
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      font-size: 1em;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      user-select: none;
+      transition: transform 0.15s ease;
+    }
+    button:active {
+      transform: scale(0.9);
     }
     .plzen { background-color: gold; color: black; }
     .radek { background-color: green; }
     .birell { background-color: blue; }
     .posh { background-color: hotpink; }
-    .nealko { background-color: darkgreen; }
-    .dikytato { background-color: saddlebrown; }
+    .nealko { background-color: orange; }
+    .dikytato { background-color: sienna; }
 
     #summary, #details {
-      margin-top: 1em;
+      margin-top: 0.5em;
       font-weight: bold;
-    }
-    #qr {
-      margin-top: 1em;
       text-align: center;
     }
-    #avatars {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      display: flex;
-      gap: 10px;
-    }
-    .avatar-circle {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #666;
-      color: white;
-      font-weight: bold;
-      font-size: 18px;
+    #actions {
+      margin-top: 1em;
       display: flex;
       justify-content: center;
-      align-items: center;
-      user-select: none;
-      box-shadow: 0 0 5px rgba(0,0,0,0.5);
+      gap: 1em;
     }
-
-    #new-user-section {
+    #actions button {
+      border-radius: 0.3em;
+      width: auto;
+      height: auto;
+      padding: 0.5em 1em;
+      font-size: 1.1em;
+      border: 2px solid #444;
+      background-color: white;
+      color: #444;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    #actions button:hover {
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+    }
+    #qr {
+      margin-top: 1.5em;
+      text-align: center;
+    }
+    #new-user {
       margin-top: 2em;
       text-align: center;
     }
-    #new-user-section input[type="text"] {
+    #new-user input[type="text"] {
+      padding: 0.4em 0.6em;
       font-size: 1em;
-      padding: 0.3em 0.5em;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      width: 150px;
+      border-radius: 0.3em;
+      border: 1px solid #aaa;
+      width: 60%;
+      max-width: 200px;
       margin-right: 0.5em;
     }
-    #new-user-section button {
-      font-size: 1em;
+    #new-user button {
       padding: 0.4em 1em;
-      border-radius: 5px;
-      border: none;
-      background-color: #007bff;
-      color: white;
+      font-size: 1em;
+      border-radius: 0.3em;
+      border: 2px solid #444;
+      background-color: white;
+      color: #444;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background-color 0.3s, color 0.3s;
     }
-    #new-user-section button:hover {
-      background-color: #0056b3;
+    #new-user button:hover {
+      background-color: #444;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>Útrata ve zkušebně</h1>
-  <div id="user-info"></div>
+  <h1>Pitíčka</h1>
+  <div id="avatar" title="Uživatel"></div>
 
-  <div id="buttons"></div>
+  <div id="buttons">
+    <div class="row">
+      <!-- První řada: Plzeň a Radek -->
+      <button class="plzen" onclick="addDrink(drinks[0])">Plzeň<br>26 Kč</button>
+      <button class="radek" onclick="addDrink(drinks[1])">Radek<br>20 Kč</button>
+    </div>
+    <div class="row">
+      <!-- Druhá řada: Posh nealko a Nealko -->
+      <button class="posh" onclick="addDrink(drinks[3])">Posh nealko<br>25 Kč</button>
+      <button class="nealko" onclick="addDrink(drinks[4])">Nealko<br>10 Kč</button>
+    </div>
+    <div class="row" style="justify-content: center;">
+      <!-- Třetí řada: Birell a Díky táto -->
+      <button class="birell" onclick="addDrink(drinks[2])">Birell<br>20 Kč</button>
+      <button class="dikytato" onclick="addDrink(drinks[5])">Díky táto<br>10 Kč</button>
+    </div>
+  </div>
 
   <div id="details"></div>
   <div id="summary">Součet: 0 Kč</div>
 
-  <button onclick="generateQr()" style="margin-top:1em;">Vygenerovat QR kód k platbě</button>
+  <div id="actions">
+    <button onclick="payToday()">Platím dnes</button>
+    <button onclick="payLater()">Zaplatím později</button>
+  </div>
+
   <div id="qr"></div>
 
-  <div id="new-user-section">
-    <input type="text" id="new-username" placeholder="Nová přezdívka" maxlength="20" />
+  <div id="new-user">
+    <input type="text" id="newUserName" placeholder="Přezdívka nového uživatele" />
     <button onclick="addNewUser()">Přidat uživatele</button>
   </div>
 
-  <div id="avatars"></div>
+  <script>
+    const drinks = [
+      { name: "Plzeň", price: 26, class: "plzen" },
+      { name: "Radek", price: 20, class: "radek" },
+      { name: "Birell", price: 20, class: "birell" },
+      { name: "Posh nealko", price: 25, class: "posh" },
+      { name: "Nealko", price: 10, class: "nealko" },
+      { name: "Díky táto", price: 10, class: "dikytato" },
+    ];
 
-<script>
-  const drinks = [
-    { name: "Plzeň", price: 26, class: "plzen" },
-    { name: "Radek", price: 20, class: "radek" },
-    { name: "Posh nealko", price: 25, class: "posh" },
-    { name: "Nealko", price: 10, class: "nealko" },
-    { name: "Birell", price: 20, class: "birell" },
-    { name: "díky táto", price: 10, class: "dikytato" },
-  ];
+    let total = 0;
+    let user = "host";
+    const selections = {};
 
-  let total = 0;
-  let user = "host";
-  let selections = {};
-
-  // Pomocná funkce pro get parametrů
-  function getParam(name) {
-    const url = new URL(window.location.href);
-    return url.searchParams.get(name);
-  }
-
-  // Uložit data do localStorage podle uživatele a dne
-  function saveData() {
-    if (!user) return;
-    const key = `utrata_${user}_${getDateStr()}`;
-    localStorage.setItem(key, JSON.stringify({ total, selections }));
-  }
-
-  // Načíst data z localStorage
-  function loadData() {
-    if (!user) return;
-    const key = `utrata_${user}_${getDateStr()}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      const data = JSON.parse(saved);
-      total = data.total || 0;
-      selections = data.selections || {};
-    } else {
-      total = 0;
-      selections = {};
+    // Načtení uživatele z URL parametru "u"
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
     }
-  }
 
-  // Formát datumu YYYYMMDD
-  function getDateStr() {
-    const d = new Date();
-    return d.toISOString().slice(0,10).replace(/-/g,'');
-  }
+    // Aktualizace součtu a detailů
+    function updateSummary() {
+      document.getElementById("summary").textContent = `Součet: ${total} Kč`;
 
-  function updateSummary() {
-    document.getElementById("summary").textContent = `Součet: ${total} Kč`;
-    const detailsDiv = document.getElementById("details");
-    const detailList = Object.entries(selections)
-      .map(([name, count]) => `${count}× ${name}`)
-      .join(", ");
-    detailsDiv.textContent = detailList ? `Detaily: ${detailList}` : "";
-  }
-
-  function addDrink(drink) {
-    total += drink.price;
-    selections[drink.name] = (selections[drink.name] || 0) + 1;
-    updateSummary();
-    saveData();
-  }
-
-  // Reset utraty a uložit
-  function resetUtrata() {
-    total = 0;
-    selections = {};
-    updateSummary();
-    saveData();
-  }
-
-  function generateQr() {
-    if (total <= 0) {
-      alert("Nejsou vybrány žádné nápoje.");
-      return;
+      const detailsDiv = document.getElementById("details");
+      const detailList = Object.entries(selections)
+        .map(([name, count]) => `${count}× ${name}`)
+        .join(", ");
+      detailsDiv.textContent = detailList ? `Detaily: ${detailList}` : "";
     }
-    const variableSymbol = getDateStr();
-    const message = `${user} ${variableSymbol}`;
-    // Použijeme český formát účtu CZ70 3030 0000 0011 6572 6015 (AirBank)
-    const qrData = `SPD*1.0*ACC:${"CZ7030300000001165726015"}*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
-    document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
 
-    // Po zaplacení resetovat útratu
-    resetUtrata();
-  }
+    // Přidání nápoje do účtu
+    function addDrink(drink) {
+      total += drink.price;
+      selections[drink.name] = (selections[drink.name] || 0) + 1;
+      updateSummary();
+      saveData();
+    }
 
-  // Avatar: pro uživatele Omelkáč a Ouhryzek ukáže kruh s iniciály v pravém horním rohu
-  function showAvatar(user) {
-    const avatarsDiv = document.getElementById("avatars");
-    avatarsDiv.innerHTML = ""; // vyčistit
-    const knownUsers = {
-      "Omelkáč": "OM",
-      "Ouhryzek": "OU"
-    };
-    for (const [username, initials] of Object.entries(knownUsers)) {
-      if (username === user) {
-        const div = document.createElement("div");
-        div.className = "avatar-circle";
-        div.textContent = initials;
-        avatarsDiv.appendChild(div);
+    // Vygenerování QR kódu pro platbu
+    function generateQr() {
+      if(total === 0) {
+        alert("Nemáte žádnou útratu k zaplacení.");
+        return;
+      }
+      const variableSymbol = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+      const message = `${user} ${variableSymbol}`;
+      const qrData = `SPD*1.0*ACC:CZ7030300000001165726015*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
+      document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
+    }
+
+    // Uložení dat do localStorage
+    function saveData() {
+      const key = `utrata_${user}`;
+      const data = { total, selections };
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    // Načtení dat z localStorage
+    function loadData() {
+      const key = `utrata_${user}`;
+      const saved = localStorage.getItem(key);
+      if(saved) {
+        try {
+          const data = JSON.parse(saved);
+          total = data.total || 0;
+          Object.assign(selections, data.selections || {});
+        } catch(e) {
+          // chyba při parsování, ignoruj
+        }
       }
     }
-  }
 
-  // Přidání nového uživatele: přesměruje na stejnou stránku s parametrem ?u=novyuser
-  function addNewUser() {
-    const input = document.getElementById("new-username");
-    const val = input.value.trim();
-    if (val.length === 0) {
-      alert("Zadej prosím přezdívku.");
-      return;
+    // Platba dnes - vygeneruje QR a vymaže data
+    function payToday() {
+      generateQr();
+      clearData();
+      updateSummary();
     }
-    // Pro jednoduchost jen přesměrujeme
-    window.location.search = `?u=${encodeURIComponent(val)}`;
-  }
 
-  // Inicializace
-  function init() {
-    user = getParam("u") || "host";
-    document.getElementById("user-info").textContent = `Uživatel: ${user}`;
-    loadData();
-    updateSummary();
-    showAvatar(user);
+    // Zaplatím později - uloží data a smaže QR
+    function payLater() {
+      saveData();
+      document.getElementById("qr").innerHTML = "";
+      alert("Útrata byla uložena, můžete pokračovat později.");
+    }
 
-    const container = document.getElementById("buttons");
-    container.innerHTML = "";
+    // Vymazat data (reset)
+    function clearData() {
+      total = 0;
+      for(const key in selections) delete selections[key];
+      const key = `utrata_${user}`;
+      localStorage.removeItem(key);
+    }
 
-    // Pořadí tlačítek dle požadavku
-    const order = ["Plzeň", "Radek", "Posh nealko", "Nealko", "Birell", "díky táto"];
+    // Přidání nového uživatele (přezdívky)
+    function addNewUser() {
+      const input = document.getElementById("newUserName");
+      const newName = input.value.trim();
+      if(!newName) {
+        alert("Zadejte přezdívku nového uživatele.");
+        return;
+      }
+      // Přesměruj na stejnou stránku s parametrem u=newName
+      window.location.search = "?u=" + encodeURIComponent(newName);
+    }
 
-    order.forEach(name => {
-      const drink = drinks.find(d => d.name === name);
-      if (!drink) return;
-      const btn = document.createElement("button");
-      btn.className = "drink-btn " + drink.class;
-      btn.innerText = `${drink.name}\n(${drink.price} Kč)`;
-      btn.onclick = () => addDrink(drink);
-      container.appendChild(btn);
-    });
-  }
+    // Nastavení avataru podle uživatele
+    function setAvatar(name) {
+      const avatarDiv = document.getElementById("avatar");
+      if(!name) {
+        avatarDiv.textContent = "";
+        return;
+      }
+      // Iniciály z názvu uživatele
+      const parts = name.split(" ");
+      let initials = "";
+      if(parts.length === 1) {
+        initials = parts[0].slice(0, 2).toUpperCase();
+      } else {
+        initials = (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      avatarDiv.textContent = initials;
+    }
 
-  window.onload = init;
-</script>
+    // Inicializace stránky
+    function init() {
+      const u = getParam("u");
+      user = u || "omelkáč"; // default uživatel
+      setAvatar(user);
+      loadData();
+      updateSummary();
+    }
+
+    window.onload = init;
+  </script>
 </body>
 </html>
