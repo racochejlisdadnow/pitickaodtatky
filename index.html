@@ -100,7 +100,8 @@
     function generateQr() {
       const variableSymbol = new Date().toISOString().slice(0, 10).replaceAll("-", "");
       const message = `${user} ${variableSymbol}`;
-      const qrData = `SPD*1.0*ACC:CZ3010100000001165726015*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
+      const iban = "CZ7030300000001165726015"; // tvůj IBAN bez mezer
+      const qrData = `SPD*1.0*ACC:${iban}*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
       document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
     }
