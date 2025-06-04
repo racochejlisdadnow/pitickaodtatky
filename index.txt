@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pitíčka</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 1em;
+      position: relative;
+      min-height: 100vh;
+      background: #fafafa;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 0.5em;
+    }
+    #avatar {
+      position: fixed;
+      top: 1em;
+      right: 1em;
+      width: 48px;
+      height: 48px;
+      background-color: #666;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.3em;
+      user-select: none;
+    }
+    #buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
+      margin-bottom: 1em;
+    }
+    .row {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      margin-bottom: 1em;
+      width: 100%;
+    }
+    button {
+      border: none;
+      border-radius: 50%;
+      width: 90px;
+      height: 90px;
+      font-size: 1em;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      user-select: none;
+      transition: transform 0.15s ease;
+    }
+    button:active {
+      transform: scale(0.9);
+    }
+    .plzen { background-color: gold; color: black; }
+    .radek { background-color: green; }
+    .birell { background-color: blue; }
+    .posh { background-color: hotpink; }
+    .nealko { background-color: orange; }
+    .dikytato { background-color: sienna; }
+
+    #summary, #details {
+      margin-top: 0.5em;
+      font-weight: bold;
+      text-align: center;
+    }
+    #actions {
+      margin-top: 1em;
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+    }
+    #actions button {
+      border-radius: 0.3em;
+      width: auto;
+      height: auto;
+      padding: 0.5em 1em;
+      font-size: 1.1em;
+      border: 2px solid #444;
+      background-color: white;
+      color: #444;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    #actions button:hover {
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+    }
+    #qr {
+      margin-top: 1.5em;
+      text-align: center;
+    }
+    #new-user {
+      margin-top: 2em;
+      text-align: center;
+    }
+    #new-user input[type="text"] {
+      padding: 0.4em 0.6em;
+      font-size: 1em;
+      border-radius: 0.3em;
+      border: 1px solid #aaa;
+      width: 60%;
+      max-width: 200px;
+      margin-right: 0.5em;
+    }
+    #new-user button {
+      padding: 0.4em 1em;
+      font-size: 1em;
+      border-radius: 0.3em;
+      border: 2px solid #444;
+      background-color: white;
+      color: #444;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    #new-user button:hover {
+      background-color: #444;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pitíčka</h1>
+  <div id="avatar" title="Uživatel"></div>
+
+  <div id="buttons">
+    <div class="row">
+      <!-- První řada: Plzeň a Radek -->
+      <button class="plzen" onclick="addDrink(drinks[0])">Plzeň<br>26 Kč</button>
+      <button class="radek" onclick="addDrink(drinks[1])">Radek<br>20 Kč</button>
+    </div>
+    <div class="row">
+      <!-- Druhá řada: Posh nealko a Nealko -->
+      <button class="posh" onclick="addDrink(drinks[3])">Posh nealko<br>25 Kč</button>
+      <button class="nealko" onclick="addDrink(drinks[4])">Nealko<br>10 Kč</button>
+    </div>
+    <div class="row" style="justify-content: center;">
+      <!-- Třetí řada: Birell a Díky táto -->
+      <button class="birell" onclick="addDrink(drinks[2])">Birell<br>20 Kč</button>
+      <button class="dikytato" onclick="addDrink(drinks[5])">Díky táto<br>10 Kč</button>
+    </div>
+  </div>
+
+  <div id="details"></div>
+  <div id="summary">Součet: 0 Kč</div>
+
+  <div id="actions">
+    <button onclick="payToday()">Platím dnes</button>
+    <button onclick="payLater()">Zaplatím později</button>
+  </div>
+
+  <div id="qr"></div>
+
+  <div id="new-user">
+    <input type="text" id="newUserName" placeholder="Přezdívka nového uživatele" />
+    <button onclick="addNewUser()">Přidat uživatele</button>
+  </div>
+
+  <script>
+    const drinks = [
+      { name: "Plzeň", price: 26, class: "plzen" },
+      { name: "Radek", price: 20, class: "radek" },
+      { name: "Birell", price: 20, class: "birell" },
+      { name: "Posh nealko", price: 25, class: "posh" },
+      { name: "Nealko", price: 10, class: "nealko" },
+      { name: "Díky táto", price: 10, class: "dikytato" },
+    ];
+
+    let total = 0;
+    let user = "host";
+    const selections = {};
+
+    // Načtení uživatele z URL parametru "u"
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    // Aktualizace součtu a detailů
+    function updateSummary() {
+      document.getElementById("summary").textContent = `Součet: ${total} Kč`;
+
+      const detailsDiv = document.getElementById("details");
+      const detailList = Object.entries(selections)
+        .map(([name, count]) => `${count}× ${name}`)
+        .join(", ");
+      detailsDiv.textContent = detailList ? `Detaily: ${detailList}` : "";
+    }
+
+    // Přidání nápoje do účtu
+    function addDrink(drink) {
+      total += drink.price;
+      selections[drink.name] = (selections[drink.name] || 0) + 1;
+      updateSummary();
+      saveData();
+    }
+
+    // Vygenerování QR kódu pro platbu
+    function generateQr() {
+      if(total === 0) {
+        alert("Nemáte žádnou útratu k zaplacení.");
+        return;
+      }
+      const variableSymbol = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+      const message = `${user} ${variableSymbol}`;
+      const qrData = `SPD*1.0*ACC:CZ7030300000001165726015*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
+      document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
+    }
+
+    // Uložení dat do localStorage
+    function saveData() {
+      const key = `utrata_${user}`;
+      const data = { total, selections };
+      localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    // Načtení dat z localStorage
+    function loadData() {
+      const key = `utrata_${user}`;
+      const saved = localStorage.getItem(key);
+      if(saved) {
+        try {
+          const data = JSON.parse(saved);
+          total = data.total || 0;
+          Object.assign(selections, data.selections || {});
+        } catch(e) {
+          // chyba při parsování, ignoruj
+        }
+      }
+    }
+
+    // Platba dnes - vygeneruje QR a vymaže data
+    function payToday() {
+      generateQr();
+      clearData();
+      updateSummary();
+    }
+
+    // Zaplatím později - uloží data a smaže QR
+    function payLater() {
+      saveData();
+      document.getElementById("qr").innerHTML = "";
+      alert("Útrata byla uložena, můžete pokračovat později.");
+    }
+
+    // Vymazat data (reset)
+    function clearData() {
+      total = 0;
+      for(const key in selections) delete selections[key];
+      const key = `utrata_${user}`;
+      localStorage.removeItem(key);
+    }
+
+    // Přidání nového uživatele (přezdívky)
+    function addNewUser() {
+      const input = document.getElementById("newUserName");
+      const newName = input.value.trim();
+      if(!newName) {
+        alert("Zadejte přezdívku nového uživatele.");
+        return;
+      }
+      // Přesměruj na stejnou stránku s parametrem u=newName
+      window.location.search = "?u=" + encodeURIComponent(newName);
+    }
+
+    // Nastavení avataru podle uživatele
+    function setAvatar(name) {
+      const avatarDiv = document.getElementById("avatar");
+      if(!name) {
+        avatarDiv.textContent = "";
+        return;
+      }
+      // Iniciály z názvu uživatele
+      const parts = name.split(" ");
+      let initials = "";
+      if(parts.length === 1) {
+        initials = parts[0].slice(0, 2).toUpperCase();
+      } else {
+        initials = (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      avatarDiv.textContent = initials;
+    }
+
+    // Inicializace stránky
+    function init() {
+      const u = getParam("u");
+      user = u || "omelkáč"; // default uživatel
+      setAvatar(user);
+      loadData();
+      updateSummary();
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
