@@ -20,6 +20,7 @@
       min-width: 140px;
       border: none;
       color: white;
+      cursor: pointer;
     }
     .plzen { background-color: gold; color: black; }
     .radek { background-color: green; }
@@ -45,6 +46,12 @@
       display: inline-block;
       margin: 0.25em 0.5em;
     }
+    .action-buttons {
+      margin-top: 1em;
+    }
+    .action-buttons button {
+      min-width: 120px;
+    }
   </style>
 </head>
 <body>
@@ -53,7 +60,12 @@
   <div id="buttons"></div>
   <div id="details"></div>
   <div id="summary">Součet: 0 Kč</div>
-  <button onclick="generateQr()">Vygenerovat QR kód k platbě</button>
+
+  <div class="action-buttons">
+    <button id="pay-now-btn" onclick="payNow()" disabled>Platím dnes</button>
+    <button id="pay-later-btn" onclick="saveForLater()" disabled>Zaplatím později</button>
+  </div>
+
   <div id="qr"></div>
 
   <div class="user-links">
@@ -73,7 +85,7 @@
 
     let total = 0;
     let user = "host";
-    const selections = {};
+    let selections = {};
 
     function getParam(name) {
       const url = new URL(window.location.href);
@@ -89,21 +101,66 @@
         .map(([name, count]) => `${count}× ${name}`)
         .join(", ");
       detailsDiv.textContent = detailList ? `Detaily: ${detailList}` : "";
+
+      // Pokud je útrata >0, povolit tlačítka
+      const payNowBtn = document.getElementById("pay-now-btn");
+      const payLaterBtn = document.getElementById("pay-later-btn");
+      if (total > 0) {
+        payNowBtn.disabled = false;
+        payLaterBtn.disabled = false;
+      } else {
+        payNowBtn.disabled = true;
+        payLaterBtn.disabled = true;
+      }
     }
 
     function addDrink(drink) {
       total += drink.price;
       selections[drink.name] = (selections[drink.name] || 0) + 1;
       updateSummary();
+      saveToLocal();
+    }
+
+    function saveToLocal() {
+      const data = { total, selections };
+      localStorage.setItem(`utraty_${user}`, JSON.stringify(data));
+    }
+
+    function loadFromLocal() {
+      const dataRaw = localStorage.getItem(`utraty_${user}`);
+      if (dataRaw) {
+        const data = JSON.parse(dataRaw);
+        total = data.total || 0;
+        selections = data.selections || {};
+      } else {
+        total = 0;
+        selections = {};
+      }
+    }
+
+    function clearLocal() {
+      localStorage.removeItem(`utraty_${user}`);
     }
 
     function generateQr() {
       const variableSymbol = new Date().toISOString().slice(0, 10).replaceAll("-", "");
       const message = `${user} ${variableSymbol}`;
-      const iban = "CZ7030300000001165726015"; // tvůj IBAN bez mezer
-      const qrData = `SPD*1.0*ACC:${iban}*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
+      const qrData = `SPD*1.0*ACC:CZ7030300000001165726015*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
       const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
       document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
+    }
+
+    function payNow() {
+      generateQr();
+      clearLocal();
+      total = 0;
+      selections = {};
+      updateSummary();
+    }
+
+    function saveForLater() {
+      saveToLocal();
+      alert("Útrata byla uložena, můžeš pokračovat později.");
     }
 
     function init() {
@@ -117,6 +174,9 @@
         btn.onclick = () => addDrink(drink);
         container.appendChild(btn);
       });
+
+      loadFromLocal();
+      updateSummary();
     }
 
     init();
