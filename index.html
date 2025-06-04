@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Útrata ve zkušebně</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 1em;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin: 0.5em 0;
+      padding: 1em;
+      font-size: 1.2em;
+    }
+    #summary, #details {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    #qr {
+      margin-top: 1em;
+      text-align: center;
+    }
+    .user-links {
+      margin-top: 2em;
+      padding: 1em;
+      background: #f2f2f2;
+      border-radius: 10px;
+    }
+    .user-links a {
+      display: inline-block;
+      margin: 0.25em 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Útrata ve zkušebně</h1>
+  <div id="user-info"></div>
+  <div id="buttons"></div>
+  <div id="details"></div>
+  <div id="summary">Součet: 0 Kč</div>
+  <button onclick="generateQr()">Vygenerovat QR kód k platbě</button>
+  <div id="qr"></div>
+
+  <div class="user-links">
+    <p>Rychlé odkazy:</p>
+    <a href="?u=Omelkáč">Omelkáč</a>
+    <a href="?u=Ouhryzek">Ouhryzek</a>
+  </div>
+
+  <script>
+    const drinks = [
+      { name: "Plzeň", price: 26 },
+      { name: "Radek", price: 20 },
+      { name: "Birell", price: 20 },
+      { name: "Posh nealko", price: 25 },
+      { name: "Nealko", price: 10 },
+    ];
+
+    let total = 0;
+    let user = "host";
+    const selections = {};
+
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    function updateSummary() {
+      document.getElementById("summary").textContent =
+        `Součet: ${total} Kč`;
+
+      const detailsDiv = document.getElementById("details");
+      const detailList = Object.entries(selections)
+        .map(([name, count]) => `${count}× ${name}`)
+        .join(", ");
+      detailsDiv.textContent = detailList ? `Detaily: ${detailList}` : "";
+    }
+
+    function addDrink(drink) {
+      total += drink.price;
+      selections[drink.name] = (selections[drink.name] || 0) + 1;
+      updateSummary();
+    }
+
+    function generateQr() {
+      const variableSymbol = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+      const message = `${user} ${variableSymbol}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=SPD*1.0*ACC:1165726015/3030*AM:${total}*CC:CZK*MSG:${encodeURIComponent(message)}&size=200x200`;
+      document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
+    }
+
+    function init() {
+      user = getParam("u") || "host";
+      document.getElementById("user-info").textContent = `Uživatel: ${user}`;
+      const container = document.getElementById("buttons");
+      drinks.forEach(drink => {
+        const btn = document.createElement("button");
+        btn.textContent = `${drink.name} (${drink.price} Kč)`;
+        btn.onclick = () => addDrink(drink);
+        container.appendChild(btn);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
