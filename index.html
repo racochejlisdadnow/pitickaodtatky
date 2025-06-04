@@ -12,12 +12,21 @@
       padding: 1em;
     }
     button {
-      display: block;
-      width: 100%;
-      margin: 0.5em 0;
+      display: inline-block;
+      margin: 0.5em;
       padding: 1em;
       font-size: 1.2em;
+      border-radius: 2em;
+      min-width: 140px;
+      border: none;
+      color: white;
     }
+    .plzen { background-color: gold; color: black; }
+    .radek { background-color: green; }
+    .birell { background-color: blue; }
+    .posh { background-color: hotpink; }
+    .nealko { background-color: darkgreen; }
+
     #summary, #details {
       margin-top: 1em;
       font-weight: bold;
@@ -55,11 +64,11 @@
 
   <script>
     const drinks = [
-      { name: "Plzeň", price: 26 },
-      { name: "Radek", price: 20 },
-      { name: "Birell", price: 20 },
-      { name: "Posh nealko", price: 25 },
-      { name: "Nealko", price: 10 },
+      { name: "Plzeň", price: 26, class: "plzen" },
+      { name: "Radek", price: 20, class: "radek" },
+      { name: "Birell", price: 20, class: "birell" },
+      { name: "Posh nealko", price: 25, class: "posh" },
+      { name: "Nealko", price: 10, class: "nealko" },
     ];
 
     let total = 0;
@@ -91,7 +100,8 @@
     function generateQr() {
       const variableSymbol = new Date().toISOString().slice(0, 10).replaceAll("-", "");
       const message = `${user} ${variableSymbol}`;
-      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=SPD*1.0*ACC:1165726015/3030*AM:${total}*CC:CZK*MSG:${encodeURIComponent(message)}&size=200x200`;
+      const qrData = `SPD*1.0*ACC:CZ3010100000001165726015*AM:${total.toFixed(2)}*CC:CZK*MSG:${message}`;
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=200x200`;
       document.getElementById("qr").innerHTML = `<img src="${qrUrl}" alt="QR kód k platbě" />`;
     }
 
@@ -101,6 +111,7 @@
       const container = document.getElementById("buttons");
       drinks.forEach(drink => {
         const btn = document.createElement("button");
+        btn.className = drink.class;
         btn.textContent = `${drink.name} (${drink.price} Kč)`;
         btn.onclick = () => addDrink(drink);
         container.appendChild(btn);
