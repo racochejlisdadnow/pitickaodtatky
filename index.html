@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
+<body>
+  <!-- Ostatní obsah stránky (tlačítka, formuláře apod.) -->
+  <div id="qr-container">
+    <div id="qr"></div>
+  </div>
+</body>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pitíčka</title>
@@ -117,12 +124,12 @@
 }
     }
 
-    #qr {
-      margin-top: 1.5em;
+    #qr-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50%;
+  width: 100%;
+  margin-top: 2em;
     }
 
     #new-user {
