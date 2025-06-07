@@ -97,21 +97,23 @@
     }
 
     #actions button {
-      border-radius: 0.3em;
-      width: auto;
-      height: auto;
-      padding: 0.5em 1em;
-      font-size: 1.1em;
-      border: 2px solid #444;
-      background-color: white;
-      color: #444;
-      transition: background-color 0.3s, color 0.3s;
+        border-radius: 25px; /* zaoblení do kulata */
+  padding: 15px 20px;
+  margin: 10px;
+  width: 180px;
+  height: 60px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #4e8098;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
     }
 
     #actions button:hover {
-      background-color: #444;
-      color: white;
-      cursor: pointer;
+      transform: scale(1.05);
+  background-color: #618985;
     }
 
     #qr {
@@ -187,7 +189,7 @@
 
   <script>
     const drinks = [
-      { name: "Plzeň", price: 26, class: "plzen" },
+      { name: "Plzeň", price: 27, class: "plzen" },
       { name: "Radek", price: 20, class: "radek" },
       { name: "Birell", price: 20, class: "birell" },
       { name: "Posh nealko", price: 25, class: "posh" },
