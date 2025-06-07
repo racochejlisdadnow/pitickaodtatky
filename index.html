@@ -379,8 +379,10 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 
 document.getElementById('show-history').addEventListener('click', function() {
-  alert('Historie konzumace je zobrazena.');
+  const historyContainer = document.getElementById('history-container');
+  historyContainer.style.display = historyContainer.style.display === 'none' ? 'block' : 'none';
 });
+
 
   </script>
 
