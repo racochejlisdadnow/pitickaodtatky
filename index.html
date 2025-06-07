@@ -185,18 +185,6 @@
 <body>
   <h1>Pitíčka</h1>
   <div id="avatar" title="Uživatel"></div>
-<div id="user-avatar-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
-  <div id="user-avatar" style="width: 50px; height: 50px; background: #4e8098; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer;">
-    OU
-  </div>
-  <div id="history-container" style="display: none; position: absolute; right: 0; top: 60px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); padding: 10px; min-width: 200px;">
-    <button id="show-history" style="width: 100%; padding: 8px; border: none; background: #4e8098; color: white; border-radius: 4px; cursor: pointer;">
-      Historie konzumace
-    </button>
-    <div id="history-list" style="margin-top: 10px;"></div>
-  </div>
-</div>
-
 
   <div id="buttons">
     <div class="row">
@@ -348,43 +336,6 @@
     }
 
     window.onload = init;
-
-let userHistory = [];
-
-document.getElementById('user-avatar').addEventListener('click', function() {
-  const historyContainer = document.getElementById('history-container');
-  historyContainer.style.display = historyContainer.style.display === 'none' ? 'block' : 'none';
-});
-
-function addToHistory(drinkName, date = new Date().toLocaleDateString()) {
-  userHistory.push({ drink: drinkName, date: date });
-  localStorage.setItem('user_history', JSON.stringify(userHistory));
-  updateHistoryList();
-}
-
-function updateHistoryList() {
-  const historyList = document.getElementById('history-list');
-  historyList.innerHTML = '';
-  userHistory.forEach(item => {
-    const div = document.createElement('div');
-    div.textContent = `${item.drink} (${item.date})`;
-    historyList.appendChild(div);
-  });
-}
-
-window.addEventListener('DOMContentLoaded', function() {
-  const savedHistory = localStorage.getItem('user_history');
-  if (savedHistory) userHistory = JSON.parse(savedHistory);
-  updateHistoryList();
-});
-
-document.getElementById('show-history').addEventListener('click', function() {
-  const historyContainer = document.getElementById('history-container');
-  historyContainer.style.display = historyContainer.style.display === 'none' ? 'block' : 'none';
-});
-
-
   </script>
-
 </body>
 </html>
