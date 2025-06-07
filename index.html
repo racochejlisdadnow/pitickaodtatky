@@ -89,14 +89,14 @@
       text-align: center;
     }
 
-    #actions {
-      margin-top: 1em;
-      display: flex;
-      justify-content: center;
-      gap: 1em;
-    }
-
-    #actions button {
+    .action-btn {
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: normal;
+  appearance: none;
+  -webkit-appearance: none;
+  vertical-align: middle;
+  text-align: center;
   border-radius: 25px;
   padding: 15px 20px;
   margin: 10px;
@@ -111,7 +111,7 @@
   transition: transform 0.2s ease, background-color 0.3s ease;
 }
 
-#actions button:hover {
+.action-btn:hover {
   transform: scale(1.05);
   background-color: #618985;
 }
@@ -121,63 +121,6 @@
       margin-top: 1.5em;
       text-align: center;
     }
-
-    #new-user {
-      margin-top: 2em;
-      text-align: center;
-    }
-
-#new-user input[type="text"],
-#new-user button {
-  box-sizing: border-box;
-  font-family: inherit;
-  line-height: normal;
-  appearance: none;
-  -webkit-appearance: none;
-  vertical-align: middle;
-}
-
-#new-user input[type="text"] {
-  border-radius: 25px;
-  padding: 15px 20px;
-  margin: 10px;
-  width: 140px;
-  height: 60px;
-  font-size: 16px;
-  font-weight: bold;
-  background-color: #4e8098;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.3s ease;
-  text-align: center;
-}
-
-#new-user input[type="text"]:hover {
-  transform: scale(1.05);
-  background-color: #618985;
-}
-
-#new-user button {
-  border-radius: 25px;
-  padding: 15px 20px;
-  margin: 10px;
-  width: 140px;
-  height: 60px;
-  font-size: 16px;
-  font-weight: bold;
-  background-color: #4e8098;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.3s ease;
-  text-align: center;
-}
-
-#new-user button:hover {
-  transform: scale(1.05);
-  background-color: #618985;
-}
 
     }
   </style>
@@ -205,9 +148,15 @@
   <div id="summary">Součet: 0 Kč</div>
 
   <div id="actions">
-    <button onclick="payToday()">Krupica hned</button>
-    <button onclick="payLater()">Sorry bro</button>
-  </div>
+  <button class="action-btn">kdo si</button>
+  <button class="action-btn">přidat chábra</button>
+</div>
+
+<div id="new-user">
+  <input type="text" class="action-btn" placeholder="jméno">
+  <button class="action-btn">přidat</button>
+</div>
+
 
   <div id="qr"></div>
 
