@@ -96,7 +96,20 @@
       gap: 1em;
     }
 
-    #actions button {
+   /* Reset výchozích stylů a konzistence */
+#actions button,
+#new-user input[type="text"],
+#new-user button {
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: normal;
+  appearance: none;
+  -webkit-appearance: none;
+  vertical-align: middle;
+  text-align: center;
+}
+
+#actions button {
   border-radius: 25px;
   padding: 15px 20px;
   margin: 10px;
@@ -114,6 +127,8 @@
 #actions button:hover {
   transform: scale(1.05);
   background-color: #618985;
+}
+
 }
     }
 
