@@ -127,8 +127,18 @@
       text-align: center;
     }
 
-    #new-user input[type="text"] {
-     border-radius: 25px; /* zaoblení do kulata */
+#new-user input[type="text"],
+#new-user button {
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: normal;
+  appearance: none;
+  -webkit-appearance: none;
+  vertical-align: middle;
+}
+
+#new-user input[type="text"] {
+  border-radius: 25px;
   padding: 15px 20px;
   margin: 10px;
   width: 140px;
@@ -140,15 +150,16 @@
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.3s ease;
-    }
+  text-align: center;
+}
 
-     #new-user input:hover {
-      transform: scale(1.05);
+#new-user input[type="text"]:hover {
+  transform: scale(1.05);
   background-color: #618985;
-       }
+}
 
-    #new-user button {
-      border-radius: 25px; /* zaoblení do kulata */
+#new-user button {
+  border-radius: 25px;
   padding: 15px 20px;
   margin: 10px;
   width: 140px;
@@ -160,11 +171,14 @@
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.3s ease;
-    }
+  text-align: center;
+}
 
-    #new-user button:hover {
-      transform: scale(1.05);
+#new-user button:hover {
+  transform: scale(1.05);
   background-color: #618985;
+}
+
     }
   </style>
 </head>
