@@ -199,14 +199,7 @@
     <input type="text" id="newUserName" placeholder="Kdo si?" />
     <button onclick="addNewUser()">Přidat chábra</button>
   </div>
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
 
-  <script>
-  (function(){
-    emailjs.init("wSjQCEY8vdj0cR0xh"); // Public key
-  })();
-</script>
-  
   <script>
     const drinks = [
       { name: "Plzeň", price: 27, class: "plzen" },
@@ -286,32 +279,10 @@
     }
 
     function clearData() {
-  // Vypočítej celkovou částku
-  const totalAmount = people.reduce((sum, p) => sum + p.total, 0);
-
-  // Zeptáme se, kdo platí (výchozí jméno prvního uživatele)
-  const payer = prompt("Zadej jméno toho, kdo platí:", people[0].name);
-
-  // Odeslání e-mailu přes EmailJS
-  if (payer && totalAmount > 0) {
-    emailjs.send("service_qv2hyhk", "template_11o4lf7", {
-      user_name: payer,
-      amount: totalAmount
-    })
-    .then(function(response) {
-      console.log("E-mail odeslán:", response.status, response.text);
-    }, function(error) {
-      console.error("Chyba při odesílání e-mailu:", error);
-    });
-  }
-
-  // Reset částek
-  people.forEach(p => p.total = 0);
-  history = [];
-  updateUI();
-  saveData();
-}
-
+      total = 0;
+      for(const key in selections) delete selections[key];
+      const key = `utrata_${user}`;
+      localStorage.removeItem(key);
     }
 
     function addNewUser() {
