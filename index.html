@@ -128,14 +128,24 @@
     }
 
     #new-user input[type="text"] {
-      padding: 0.4em 0.6em;
-      font-size: 1em;
-      border-radius: 0.3em;
-      border: 1px solid #aaa;
-      width: 60%;
-      max-width: 200px;
-      margin-right: 0.5em;
+     border-radius: 25px; /* zaoblení do kulata */
+  padding: 15px 20px;
+  margin: 10px;
+  width: 140px;
+  height: 60px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #4e8098;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
     }
+
+     #new-user input:hover {
+      transform: scale(1.05);
+  background-color: #618985;
+       }
 
     #new-user button {
       border-radius: 25px; /* zaoblení do kulata */
